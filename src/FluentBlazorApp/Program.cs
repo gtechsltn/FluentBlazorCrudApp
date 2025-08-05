@@ -1,7 +1,9 @@
 using System.Text;
 
-using FluentBlazorApp.Data;
-using FluentBlazorApp.Services;
+using FluentBlazorApp.Application.Interfaces;
+using FluentBlazorApp.Application.Services;
+using FluentBlazorApp.Infrastructure.Data;
+using FluentBlazorApp.Infrastructure.Data.Repositories;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -12,7 +14,7 @@ namespace FluentBlazorApp;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
@@ -30,14 +32,21 @@ public class Program
         try
         {
             builder.Services.AddRazorPages();
-            builder.Services.AddServerSideBlazor();
-            builder.Services.AddScoped<WeatherService>();
+            builder.Services.AddServerSideBlazor(options =>
+            {
+                options.DetailedErrors = true;
+            });
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString, sqlServerOptions =>
                     sqlServerOptions.EnableRetryOnFailure()));
+
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<ISeedData, SeedData>();
+            builder.Services.AddScoped<IWeatherForecastRepository, WeatherForecastRepository>();
+            builder.Services.AddScoped<IWeatherService, WeatherService>();
 
             var app = builder.Build();
 
@@ -53,6 +62,16 @@ public class Program
                 {
                     var logger = services.GetRequiredService<ILogger<Program>>();
                     logger.LogError(ex, "An error occurred creating the DB.");
+                }
+                try
+                {
+                    var seedData = services.GetRequiredService<ISeedData>();
+                    await seedData.InitializeAsync();
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "An error occurred during database seeding.");
                 }
             }
 

@@ -1,9 +1,8 @@
-﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace FluentBlazorApp.Migrations
+namespace FluentBlazorApp.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
     public partial class AddIdToWeatherForecast : Migration

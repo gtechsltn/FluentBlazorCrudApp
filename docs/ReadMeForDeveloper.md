@@ -2,6 +2,11 @@
 + Blazor Server App
 + Microsoft.FluentUI.AspNetCore
 
+
+Debugging: https://localhost:7124/
+
+Production: https://localhost:44300/
+
 ```
 Microsoft.FluentUI.AspNetCore là một bộ thư viện thành phần (component library) dành cho Blazor, cho phép các nhà phát triển xây dựng các ứng dụng web với giao diện người dùng theo hệ thống thiết kế Fluent UI của Microsoft. 🎨
 
@@ -184,3 +189,94 @@ dotnet add package Serilog.Sinks.Console
 dotnet add package Serilog.Sinks.File
 ```
 
+# Clean Architecture with Blazor for Beginners in .NET 8🔥
+
+https://www.youtube.com/watch?v=1-Y1OW4RisA
+
+# Folder Structure
+
+```
+├── MySolution.sln
+│
+├── MyProject.Domain
+│   └── Entities
+│       └── WeatherForecast.cs
+│
+├── MyProject.Application
+│   └── Interfaces
+│       └── IWeatherForecastRepository.cs
+│
+├── MyProject.Infrastructure
+│   ├── Data
+│   │   └── ApplicationDbContext.cs
+│   └── Migrations   <-- Đặt thư mục Migrations ở đây
+│
+└── MyProject.Presentation
+    └── Pages
+        └── FetchData.razor
+```
+
+```
+# D:\gtechsltn\FluentBlazorCrudApp\src\FluentBlazorApp.Infrastructure
+dotnet add package Microsoft.Extensions.Logging
+dotnet add package Microsoft.Data.SqlClient
+```
+
+# Enable Detailed Exceptions
+## CircuitOptions.DetailedErrors
+
+```
+builder.Services.AddServerSideBlazor(options =>
+{
+    options.DetailedErrors = true;
+});
+```
+
+# You're Injecting the Concrete Class, Not the Interface
+
+## Wrong way:
+```
+@* Pages/FetchData.razor *@
+@page "/fetchdata"
+
+@inject WeatherService WeatherService
+
+<h3>Weather forecast</h3>
+
+@code {
+    // ...
+}
+```
+
+## Correct way:
+```
+@* Pages/FetchData.razor *@
+@page "/fetchdata"
+
+@* Make sure you are injecting the interface, not the concrete class *@
+@inject IWeatherService WeatherService
+
+<h3>Weather forecast</h3>
+
+@code {
+    // ...
+}
+```
+
+# Kết hợp EF Core và Dapper trong kiến trúc Clean Architecture
+
+Để kết hợp EF Core và Dapper trong kiến trúc Clean Architecture của bạn, bạn sẽ cần sử dụng mô hình Unit of Work (UoW). Mô hình này sẽ quản lý các repositories và chia sẻ cùng một DbContext cho tất cả các hoạt động, đảm bảo tính nhất quán của dữ liệu.
+
+```
+dotnet add package Microsoft.Extensions.Logging
+dotnet add package Microsoft.EntityFrameworkCore
+dotnet add package Dapper
+dotnet add package Microsoft.Data.SqlClient
+```
+
+
+## MultipleActiveResultSets=true
+
+```
+Data Source=localhost;Initial Catalog=FluentBlazorDb;Trusted_Connection=True;Encrypt=True;TrustServerCertificate=True;Connect Timeout=180;Pooling=True;MultipleActiveResultSets=true;
+```

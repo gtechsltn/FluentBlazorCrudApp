@@ -1,4 +1,4 @@
-namespace FluentBlazorApp.Models;
+namespace FluentBlazorApp.Domain.Entities;
 
 public class WeatherForecast
 {

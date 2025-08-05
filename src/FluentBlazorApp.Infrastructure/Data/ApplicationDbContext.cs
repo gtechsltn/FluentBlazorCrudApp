@@ -1,8 +1,8 @@
-using FluentBlazorApp.Models;
+using FluentBlazorApp.Domain.Entities;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace FluentBlazorApp.Data;
+namespace FluentBlazorApp.Infrastructure.Data;
 
 public class ApplicationDbContext : DbContext
 {
