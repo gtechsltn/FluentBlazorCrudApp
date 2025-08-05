@@ -1,28 +1,64 @@
+using System.Text;
+
 using FluentBlazorApp.Data;
+using FluentBlazorApp.Services;
 
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+using Microsoft.EntityFrameworkCore;
 
-namespace FluentBlazorApp
+using Serilog;
+using Serilog.Events;
+
+namespace FluentBlazorApp;
+
+public class Program
 {
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+            .MinimumLevel.Override("Microsoft.EntityFrameworkCore.Database.Command", LogEventLevel.Information)
+            .Enrich.FromLogContext()
+            .WriteTo.Console()
+            .WriteTo.File("logs/ts-admin-.log", rollingInterval: RollingInterval.Day, encoding: Encoding.UTF8)
+            .CreateLogger();
 
-            // Add services to the container.
+        var builder = WebApplication.CreateBuilder(args);
+
+        builder.Host.UseSerilog();
+
+        try
+        {
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
-            builder.Services.AddSingleton<WeatherForecastService>();
+            builder.Services.AddScoped<WeatherService>();
+
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(connectionString, sqlServerOptions =>
+                    sqlServerOptions.EnableRetryOnFailure()));
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    var context = services.GetRequiredService<ApplicationDbContext>();
+                    context.Database.Migrate();
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "An error occurred creating the DB.");
+                }
+            }
+
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -33,9 +69,18 @@ namespace FluentBlazorApp
             app.UseRouting();
 
             app.MapBlazorHub();
+
             app.MapFallbackToPage("/_Host");
 
             app.Run();
+        }
+        catch (Exception ex)
+        {
+            Log.Fatal(ex, "Application failed to start correctly.");
+        }
+        finally
+        {
+            Log.CloseAndFlush();
         }
     }
 }

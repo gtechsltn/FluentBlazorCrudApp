@@ -1,6 +1,4 @@
-﻿@inherits LayoutComponentBase
-
-<PageTitle>FluentBlazorApp</PageTitle>
+@inherits LayoutComponentBase
 
 <div class="page">
     <div class="sidebar">
@@ -9,11 +7,23 @@
 
     <main>
         <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
         </div>
 
         <article class="content px-4">
-            @Body
+            <ErrorBoundary>
+                <ChildContent>
+                    @Body
+                </ChildContent>
+                <ErrorContent Context="ex">
+                    <p class="error-message">
+                        An unexpected error occurred: @ex.Message
+                    </p>
+                    <p>
+                        Please reload the page.
+                    </p>
+                </ErrorContent>
+            </ErrorBoundary>
         </article>
     </main>
 </div>

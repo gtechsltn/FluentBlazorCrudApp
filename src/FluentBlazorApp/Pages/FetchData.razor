@@ -1,6 +1,11 @@
-﻿@page "/fetchdata"
+@page "/fetchdata"
+
 @using FluentBlazorApp.Data
-@inject WeatherForecastService ForecastService
+@using FluentBlazorApp.Models
+@using FluentBlazorApp.Services
+
+@inject WeatherService WeatherService
+@inject ILogger<WeatherService> _logger
 
 <PageTitle>Weather forecast</PageTitle>
 
@@ -42,6 +47,14 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await ForecastService.GetForecastAsync(DateOnly.FromDateTime(DateTime.Now));
+        try
+        {
+            forecasts = await WeatherService.GetForecastAsync(DateOnly.FromDateTime(DateTime.Now));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Lỗi khi lưu dữ liệu thời tiết. Chi tiết: {Message}", ex.Message);
+            throw;
+        }
     }
 }
