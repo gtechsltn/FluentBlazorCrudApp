@@ -1,10 +1,19 @@
 using System.Text;
 
+using Dapper;
+
 using FluentBlazorApp.Application.Interfaces;
 using FluentBlazorApp.Application.Services;
+using FluentBlazorApp.Infrastructure.Authorization;
+using FluentBlazorApp.Infrastructure.Dapper;
 using FluentBlazorApp.Infrastructure.Data;
 using FluentBlazorApp.Infrastructure.Data.Repositories;
+using FluentBlazorApp.Infrastructure.Security;
+using FluentBlazorApp.Infrastructure.Services;
 
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 using Serilog;
@@ -31,47 +40,84 @@ public class Program
 
         try
         {
+            SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
+
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(connectionString, sqlServerOptions =>
+                    sqlServerOptions.EnableRetryOnFailure()));
+
+            builder.Services.AddSingleton<IAuthorizationPolicyProvider, CustomPolicyProvider>();
+            builder.Services.AddSingleton<IAuthorizationHandler, CustomRequirementHandler>();
+
+            builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+            builder.Services.AddScoped<CustomAuthenticationStateProvider>();
+
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(options =>
+            {
+                options.LoginPath = "/login";
+                options.LogoutPath = "/logout";
+            });
+
+            builder.Services.AddHttpContextAccessor();
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admin", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.Requirements.Add(new CustomRequirement("Admin"));
+                });
+            });
+
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<ISeedData, SeedData>();
+
+            builder.Services.AddScoped<IWeatherForecastRepository, WeatherForecastRepository>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+            builder.Services.AddScoped<IWeatherService, WeatherService>();
+            builder.Services.AddScoped<IUserAgentParserService, UserAgentParserService>();
+            builder.Services.AddScoped<IUserService, UserService>();
+
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor(options =>
             {
                 options.DetailedErrors = true;
             });
 
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString, sqlServerOptions =>
-                    sqlServerOptions.EnableRetryOnFailure()));
-
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddScoped<ISeedData, SeedData>();
-            builder.Services.AddScoped<IWeatherForecastRepository, WeatherForecastRepository>();
-            builder.Services.AddScoped<IWeatherService, WeatherService>();
-
             var app = builder.Build();
 
-            using (var scope = app.Services.CreateScope())
+            if (!app.Environment.IsDevelopment())
             {
-                var services = scope.ServiceProvider;
-                try
+                using (var scope = app.Services.CreateScope())
                 {
-                    var context = services.GetRequiredService<ApplicationDbContext>();
-                    context.Database.Migrate();
-                }
-                catch (Exception ex)
-                {
-                    var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "An error occurred creating the DB.");
-                }
-                try
-                {
-                    var seedData = services.GetRequiredService<ISeedData>();
-                    await seedData.InitializeAsync();
-                }
-                catch (Exception ex)
-                {
-                    var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "An error occurred during database seeding.");
+                    var services = scope.ServiceProvider;
+                    try
+                    {
+                        var context = services.GetRequiredService<ApplicationDbContext>();
+                        context.Database.Migrate();
+                    }
+                    catch (Exception ex)
+                    {
+                        var logger = services.GetRequiredService<ILogger<Program>>();
+                        logger.LogError(ex, "An error occurred creating the DB.");
+                        throw;
+                    }
+                    try
+                    {
+                        var seedData = services.GetRequiredService<ISeedData>();
+                        await seedData.InitializeAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        var logger = services.GetRequiredService<ILogger<Program>>();
+                        logger.LogError(ex, "An error occurred during database seeding.");
+                        throw;
+                    }
                 }
             }
 
@@ -86,6 +132,12 @@ public class Program
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseAuthentication();
+
+            app.UseAuthorization();
+
+            app.MapRazorPages();
 
             app.MapBlazorHub();
 

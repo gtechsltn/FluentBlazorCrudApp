@@ -10,45 +10,45 @@ namespace FluentBlazorApp.Infrastructure.Data;
 
 public class UnitOfWork : IUnitOfWork
 {
-    private readonly ApplicationDbContext _dbContext;
+    private readonly ApplicationDbContext _db;
     private readonly IWeatherForecastRepository _weatherForecasts;
     private DbConnection _connection;
     private IDbTransaction _transaction;
 
-    public UnitOfWork(ApplicationDbContext dbContext, IWeatherForecastRepository weatherForecasts)
+    public UnitOfWork(ApplicationDbContext db, IWeatherForecastRepository weatherForecasts)
     {
-        _dbContext = dbContext;
+        _db = db;
         _weatherForecasts = weatherForecasts;
     }
 
     public IWeatherForecastRepository WeatherForecasts => _weatherForecasts;
 
-    public IDbConnection Connection => _dbContext.Database.GetDbConnection();
+    public IDbConnection Connection => _db.Database.GetDbConnection();
 
-    public IDbTransaction Transaction => _dbContext.Database.CurrentTransaction?.GetDbTransaction();
+    public IDbTransaction Transaction => _db.Database.CurrentTransaction?.GetDbTransaction();
 
     public async Task BeginTransactionAsync()
     {
-        await _dbContext.Database.BeginTransactionAsync();
+        await _db.Database.BeginTransactionAsync();
     }
 
     public async Task CommitTransactionAsync()
     {
-        await _dbContext.Database.CommitTransactionAsync();
+        await _db.Database.CommitTransactionAsync();
     }
 
     public async Task RollbackTransactionAsync()
     {
-        await _dbContext.Database.RollbackTransactionAsync();
+        await _db.Database.RollbackTransactionAsync();
     }
 
     public async Task<int> SaveChangesAsync()
     {
-        return await _dbContext.SaveChangesAsync();
+        return await _db.SaveChangesAsync();
     }
 
     public void Dispose()
     {
-        _dbContext.Dispose();
+        _db.Dispose();
     }
 }

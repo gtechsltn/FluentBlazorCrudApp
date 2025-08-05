@@ -280,3 +280,30 @@ dotnet add package Microsoft.Data.SqlClient
 ```
 Data Source=localhost;Initial Catalog=FluentBlazorDb;Trusted_Connection=True;Encrypt=True;TrustServerCertificate=True;Connect Timeout=180;Pooling=True;MultipleActiveResultSets=true;
 ```
+
+## Chưa thể dùng Authorize
+@attribute [Authorize]
+@attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize(Roles = "Admin,Manager")]
+
+## Cách chạy EF Core Migrations sau khi chuyển sang mô hình Clean Architecture
+
+```
+D:\gtechsltn\FluentBlazorCrudApp\src>dotnet ef migrations add InitialCreate --project FluentBlazorApp.Infrastructure --startup-project FluentBlazorApp
+Build started...
+Build succeeded.
+Done. To undo this action, use 'ef migrations remove'
+
+D:\gtechsltn\FluentBlazorCrudApp\src>
+```
+
+```
+D:\gtechsltn\FluentBlazorCrudApp\src>dotnet ef database update --project FluentBlazorApp.Infrastructure --startup-project FluentBlazorApp
+Build started...
+Build succeeded.
+Acquiring an exclusive lock for migration application. See https://aka.ms/efcore-docs-migrations-lock for more information if this takes too long.
+Applying migration '20250805095120_InitialCreate'.
+Done.
+
+D:\gtechsltn\FluentBlazorCrudApp\src>
+```

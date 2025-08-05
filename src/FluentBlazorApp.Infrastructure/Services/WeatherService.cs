@@ -1,7 +1,8 @@
 using FluentBlazorApp.Application.Interfaces;
+using FluentBlazorApp.Application.Services;
 using FluentBlazorApp.Domain.Entities;
 
-namespace FluentBlazorApp.Application.Services;
+namespace FluentBlazorApp.Infrastructure.Services;
 
 public class WeatherService : IWeatherService
 {

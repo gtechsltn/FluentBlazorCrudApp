@@ -1,7 +1,10 @@
 @page "/fetchdata"
+@attribute [Authorize(Policy = "Admin")]
+
 @using FluentBlazorApp.Application.Interfaces
 @using FluentBlazorApp.Application.Services
 @using FluentBlazorApp.Domain.Entities
+@using FluentBlazorApp.Infrastructure.Services
 
 @inject IWeatherService WeatherService
 @inject ILogger<WeatherService> _logger

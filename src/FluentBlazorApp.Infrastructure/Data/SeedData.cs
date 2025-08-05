@@ -11,18 +11,18 @@ namespace FluentBlazorApp.Infrastructure.Data;
 
 public class SeedData : ISeedData
 {
-    private readonly ApplicationDbContext _context;
+    private readonly ApplicationDbContext _db;
     private readonly ILogger<SeedData> _logger;
 
-    public SeedData(ApplicationDbContext context, ILogger<SeedData> logger)
+    public SeedData(ApplicationDbContext db, ILogger<SeedData> logger)
     {
-        _context = context;
+        _db = db;
         _logger = logger;
     }
 
     public async Task InitializeAsync()
     {
-        if (await _context.WeatherForecasts.AnyAsync())
+        if (await _db.WeatherForecasts.AnyAsync())
         {
             return;
         }
@@ -41,8 +41,8 @@ public class SeedData : ISeedData
 
         try
         {
-            _context.WeatherForecasts.AddRange(forecasts);
-            await _context.SaveChangesAsync();
+            _db.WeatherForecasts.AddRange(forecasts);
+            await _db.SaveChangesAsync();
             _logger.LogInformation("Database seeded successfully with initial data.");
         }
         catch (DbUpdateException ex)
