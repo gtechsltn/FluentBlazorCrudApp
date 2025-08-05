@@ -1,4 +1,4 @@
-using Dapper;
+using System.Data;
 
 using FluentBlazorApp.Application.Interfaces;
 using FluentBlazorApp.Domain.Entities;
@@ -18,14 +18,7 @@ public class WeatherForecastRepository : IWeatherForecastRepository
 
     public async Task<IEnumerable<WeatherForecast>> GetForecastsAsync(DateOnly startDate)
     {
-        // return await _context.WeatherForecasts.Where(f => f.Date >= startDate).ToListAsync();
-
-        var sql = "SELECT * FROM WeatherForecasts WHERE Date >= @StartDate";
-        var startDateTime = startDate.ToDateTime(TimeOnly.MinValue);
-        using (var connection = _db.Database.GetDbConnection())
-        {
-            return await connection.QueryAsync<WeatherForecast>(sql, new { StartDate = startDateTime });
-        }
+        return await _db.WeatherForecasts.Where(f => f.Date >= startDate).ToListAsync();
     }
 
     public async Task AddForecastsAsync(IEnumerable<WeatherForecast> forecasts)

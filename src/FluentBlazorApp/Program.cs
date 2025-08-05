@@ -1,11 +1,8 @@
 using System.Text;
 
-using Dapper;
-
 using FluentBlazorApp.Application.Interfaces;
 using FluentBlazorApp.Application.Services;
 using FluentBlazorApp.Infrastructure.Authorization;
-using FluentBlazorApp.Infrastructure.Dapper;
 using FluentBlazorApp.Infrastructure.Data;
 using FluentBlazorApp.Infrastructure.Data.Repositories;
 using FluentBlazorApp.Infrastructure.Security;
@@ -40,8 +37,6 @@ public class Program
 
         try
         {
-            SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
-
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
