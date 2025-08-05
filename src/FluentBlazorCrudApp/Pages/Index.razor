@@ -1,0 +1,32 @@
+@page "/"
+@using Microsoft.FluentUI.AspNetCore.Components.Components.Tooltip
+@inject RouteService RouteService
+@inject StateContainer State
+@inject ITooltipService TooltipService
+@inject IDialogService DialogService
+@inject IToastService ToastService
+
+<h3>Home Page (Current: @State.CurrentRoute)</h3>
+@* 
+<FluentButton Id="btnNav" Appearance="Appearance.Accent" @onclick="()=>RouteService.NavigateTo("/products")">
+    Go to Products
+</FluentButton> *@
+
+<FluentButton Id="btnTip" Appearance="Appearance.Neutral" @onclick="ShowTip">
+    Show Tooltip
+</FluentButton>
+
+<FluentButton Appearance="Appearance.Stealth" @onclick="()=>DialogService.ShowAsync("Hello","This is a Fluent UI Dialog!")">
+    Show Dialog
+</FluentButton>
+
+<FluentButton Appearance="Appearance.Accent" @onclick="()=>ToastService.ShowInfoAsync("Welcome to Fluent UI!")">
+    Show Toast
+</FluentButton>
+@* 
+@code {
+    private Task ShowTip() => TooltipService.ShowAsync("Hello Tooltip!", "btnTip");
+
+    protected override void OnInitialized() => State.OnChange += StateHasChanged;
+    public void Dispose() => State.OnChange -= StateHasChanged;
+} *@

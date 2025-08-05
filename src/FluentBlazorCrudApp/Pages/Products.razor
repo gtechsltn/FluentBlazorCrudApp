@@ -1,0 +1,15 @@
+@page "/products"
+
+<h3>Product List</h3>
+
+<Component />
+
+@code {
+    private List<Product> products = new()
+    {
+        new Product { Id = 1, Name = "Laptop", Price = 1200 },
+        new Product { Id = 2, Name = "Keyboard", Price = 99 },
+        new Product { Id = 3, Name = "Mouse", Price = 49 }
+    };
+    public class Product { public int Id { get; set; } public string Name { get; set; } = ""; public decimal Price { get; set; } }
+}

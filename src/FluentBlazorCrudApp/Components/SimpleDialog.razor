@@ -1,0 +1,27 @@
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<FluentDialog @bind-Visible="_visible" Title="@Title">
+    <DialogContent>
+        <p>@ContentText</p>
+    </DialogContent>
+    <DialogFooter>
+        <FluentButton Appearance="Appearance.Accent" @onclick="Close">OK</FluentButton>
+    </DialogFooter>
+</FluentDialog>
+
+@code {
+    [Parameter] public string Title { get; set; } = "Information";
+    [Parameter] public string ContentText { get; set; } = "This is a dialog message.";
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private bool _visible = true;
+
+    private async Task Close()
+    {
+        _visible = false;
+        if (OnClose.HasDelegate)
+        {
+            await OnClose.InvokeAsync();
+        }
+    }
+}

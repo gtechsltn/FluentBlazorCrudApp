@@ -1,0 +1,17 @@
+@inherits LayoutComponentBase
+
+<FluentNavMenu>
+    <FluentNavLink Href="/">🏠 Home</FluentNavLink>
+    <FluentNavLink Href="/products">📦 Products</FluentNavLink>
+</FluentNavMenu>
+
+<main class="p-4">
+    @Body
+</main>
+
+<!-- Providers -->
+<FluentToastProvider />
+<FluentDialogProvider />
+<FluentTooltipProvider />
+<FluentMessageBarProvider />
+@* <FluentMenuProvider /> *@

@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "FluentBlazorCrudApp": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:2568;http://localhost:2569"
+    }
+  }
+}
