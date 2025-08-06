@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.FluentUI.AspNetCore.Components;
 
 using Serilog;
 using Serilog.Events;
@@ -54,13 +55,15 @@ public class Program
             .AddCookie(options =>
             {
                 options.LoginPath = "/login";
-                options.AccessDeniedPath = "/AccessDenied";
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
-                options.SlidingExpiration = true;
+                //options.AccessDeniedPath = "/AccessDenied";
+                //options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+                //options.SlidingExpiration = true;
                 options.LogoutPath = "/logout";
             });
 
             builder.Services.AddCascadingAuthenticationState();
+
+            builder.Services.AddFluentUIComponents();
 
             builder.Services.AddHttpContextAccessor();
 

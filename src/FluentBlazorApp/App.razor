@@ -8,10 +8,10 @@
                     </NotAuthorized>
                     <Authorizing>
                         <p>Please wait...</p>
+                        @* <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+                           <FocusOnNavigate RouteData="@routeData" Selector="h1" /> *@
                     </Authorizing>
                 </AuthorizeRouteView>
-                @* <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-                <FocusOnNavigate RouteData="@routeData" Selector="h1" /> *@
             </Found>
             <NotFound>
                 <PageTitle>Not found</PageTitle>

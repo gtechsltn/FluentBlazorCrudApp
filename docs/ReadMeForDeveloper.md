@@ -1,6 +1,9 @@
 + .NET 10.0
 + Blazor Server App
 + Microsoft.FluentUI.AspNetCore
++ OnInitializedAsync
++ IHttpContextAccessor
++ NavigationManager
 + AuthorizeRouteView
     + using Microsoft.AspNetCore.Authentication.Cookies;
     + using Microsoft.AspNetCore.Components.Authorization;

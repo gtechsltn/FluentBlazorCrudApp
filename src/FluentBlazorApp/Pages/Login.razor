@@ -46,21 +46,7 @@
 
         if (user != null)
         {
-            // The logic to sign in the user, which sets the authentication cookie.
-            // This is what's causing the error because the headers have already been sent.
-            // await HttpContextAccessor.HttpContext.SignInAsync(
-            //     CookieAuthenticationDefaults.AuthenticationScheme,
-            //     claimsPrincipal,
-            //     authProperties
-            // );
-
-            // CORRECT: Force a full-page reload to a different page.
-            // The new request will have the authentication cookie.
-            var returnUrl = HttpContextAccessor?.HttpContext?.Request?.Query["returnUrl"] ?? string.Empty;
-            var defaultUrl = "/counter";
-            var uri = string.IsNullOrEmpty(returnUrl) ? defaultUrl : returnUrl.ToString();
-
-            if (user.Roles.Contains("Admin"))
+            if (user.Roles != null && user.Roles.Contains("Admin"))
             {
                 //await AuthenticationStateProvider.MarkUserAsAuthenticated(user.Username, "Admin");
                 var claims = new List<Claim>
@@ -75,12 +61,23 @@
                 if (httpContext != null)
                 {
                     await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-                }                
-                var adminUrl = "/fetchdata";                
+                }
+                var adminUrl = "/fetchdata";
                 NavigationManager.NavigateTo(adminUrl, forceLoad: true);
             }
             else
             {
+                var claims = new[] { new Claim(ClaimTypes.Name, user.Username) };
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
+                var httpContext = HttpContextAccessor?.HttpContext;
+                if (httpContext != null)
+                {
+                    await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+                }
+                var returnUrl = HttpContextAccessor?.HttpContext?.Request?.Query["returnUrl"] ?? string.Empty;
+                var defaultUrl = "/counter";
+                var uri = string.IsNullOrEmpty(returnUrl) ? defaultUrl : returnUrl.ToString();
                 NavigationManager.NavigateTo(uri, forceLoad: true);
             }
         }
