@@ -1,0 +1,14 @@
+@inject NavigationManager Navigation
+
+@code {
+    protected override void OnInitialized()
+    {
+        // Get the current URL so we can return to it after a successful login
+        var returnUrl = Navigation.ToBaseRelativePath(Navigation.Uri);
+
+        // Use NavigationManager to navigate to the login page
+        // The `true` parameter forces a full-page reload, which is necessary for the authentication flow.
+        Navigation.NavigateTo($"Login?returnUrl={returnUrl}", true);
+        // Navigation.NavigateTo($"Identity/Account/Login?returnUrl={returnUrl}", true);
+    }
+}

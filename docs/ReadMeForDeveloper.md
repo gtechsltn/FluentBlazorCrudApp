@@ -1,7 +1,10 @@
 + .NET 10.0
 + Blazor Server App
 + Microsoft.FluentUI.AspNetCore
-
++ AuthorizeRouteView
+    + using Microsoft.AspNetCore.Authentication.Cookies;
+    + using Microsoft.AspNetCore.Components.Authorization;
+    + using Microsoft.AspNetCore.Authorization;
 
 Debugging: https://localhost:7124/
 
@@ -81,6 +84,13 @@ D:\gtechsltn\FluentBlazorCrudApp\src\FluentBlazorApp>
 ```
 
 ## dotnet ef database update
+```
+D:\gtechsltn\FluentBlazorCrudApp\src>
+dotnet ef migrations add UpdateUserSaltType --startup-project FluentBlazorApp --project FluentBlazorApp.Infrastructure
+D:\gtechsltn\FluentBlazorCrudApp\src>
+dotnet ef database update --startup-project FluentBlazorApp --project FluentBlazorApp.Infrastructure
+```
+
 ```
 D:\gtechsltn\FluentBlazorCrudApp\src\FluentBlazorApp>dotnet ef database update
 Build started...
@@ -307,3 +317,30 @@ Done.
 
 D:\gtechsltn\FluentBlazorCrudApp\src>
 ```
+
+# Hashed Password using Bcrypt.NET
+
+```
+$2a$12$7nvD6HXBR0yrEAZukvQbh.aaR.rePrnmjVpA2VoCbcKEVw9h2FI/i
+
+$2a$                                → indicates the bcrypt algorithm version.
+12                                  → is the cost factor (work factor), meaning the hash was generated with 2^12 = 4096 iterations.
+7nvD6HXBR0yrEAZukvQbh.              → is the 16-byte salt (base64 encoded).
+aaR.rePrnmjVpA2VoCbcKEVw9h2FI/i     → is the hashed password (base64 encoded).
+```
+
+## Can it be reversed?
+No. Bcrypt is a one-way hashing function, meaning you cannot directly reverse it to get the original password.
+
+## How to verify the password?
+
+You must use the same bcrypt algorithm to compare an input password with this hash.
+
+In C#, for example:
+
+```
+using BCrypt.Net;
+bool isValid = BCrypt.Verify("plaintextPassword", "$2a$12$7nvD6HXBR0yrEAZukvQbh.aaR.rePrnmjVpA2VoCbcKEVw9h2FI/i");
+```
+
+If isValid is true, the plaintext matches the hash.

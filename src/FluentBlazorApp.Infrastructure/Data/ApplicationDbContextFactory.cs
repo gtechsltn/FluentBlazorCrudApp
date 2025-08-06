@@ -8,7 +8,7 @@ public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<Applicati
 {
     public ApplicationDbContext CreateDbContext(string[] args)
     {
-        var basePath = AppContext.BaseDirectory; // TODO: MANH
+        var basePath = AppContext.BaseDirectory;
         var configuration = new ConfigurationBuilder()
             .SetBasePath(basePath) // => dotnet add package Microsoft.Extensions.Configuration
                                    // => dotnet add package Microsoft.Extensions.Configuration.Json

@@ -54,8 +54,13 @@ public class Program
             .AddCookie(options =>
             {
                 options.LoginPath = "/login";
+                options.AccessDeniedPath = "/AccessDenied";
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+                options.SlidingExpiration = true;
                 options.LogoutPath = "/logout";
             });
+
+            builder.Services.AddCascadingAuthenticationState();
 
             builder.Services.AddHttpContextAccessor();
 

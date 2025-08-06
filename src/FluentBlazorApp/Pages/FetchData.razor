@@ -1,5 +1,8 @@
 @page "/fetchdata"
-@attribute [Authorize(Policy = "Admin")]
+@attribute [Authorize]
+@* @attribute [Authorize(Roles = "Admin")]
+@attribute [Authorize(Roles = "Admin,Manager")]
+@attribute [Authorize(Policy = "Admin")] *@
 
 @using FluentBlazorApp.Application.Interfaces
 @using FluentBlazorApp.Application.Services

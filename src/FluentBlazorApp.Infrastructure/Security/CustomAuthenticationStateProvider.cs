@@ -1,6 +1,7 @@
 using System.Security.Claims;
 
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http;
 
@@ -44,7 +45,7 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
         var httpContext = _httpContextAccessor.HttpContext;
         if (httpContext != null)
         {
-            await httpContext.SignInAsync("Cookies", principal);
+            await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
         }
 
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(principal)));
@@ -55,7 +56,7 @@ public class CustomAuthenticationStateProvider : AuthenticationStateProvider
         var httpContext = _httpContextAccessor.HttpContext;
         if (httpContext != null)
         {
-            await httpContext.SignOutAsync("Cookies");
+            await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         }
 
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()))));

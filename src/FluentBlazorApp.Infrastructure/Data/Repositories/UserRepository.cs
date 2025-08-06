@@ -1,4 +1,5 @@
 using FluentBlazorApp.Application.Interfaces;
+using FluentBlazorApp.Domain.Dtos;
 using FluentBlazorApp.Domain.Entities;
 
 using Microsoft.EntityFrameworkCore;
@@ -20,8 +21,26 @@ public class UserRepository : IUserRepository
         await _db.SaveChangesAsync();
     }
 
-    public async Task<User?> GetUserByUsernameAsync(string username)
+    public async Task<UserWithRolesDto?> GetUserByUsernameAsync(string usernameToLower)
     {
-        return await _db.Users.FirstOrDefaultAsync(u => u.Username == username);
+        // Get the user by their unique username
+#if DEBUG
+        var user = await _db.Users
+            .Include(u => u.UserRoles) // Include the UserRole join table
+                .ThenInclude(ur => ur.Role) // Then include the Role from the UserRole
+            .FirstOrDefaultAsync(u => u.UsernameToLower == usernameToLower);
+#endif
+        // Projecting to a Custom DTO
+        var userWithRoles = await _db.Users
+            .Where(u => u.UsernameToLower == usernameToLower)
+            .Select(u => new UserWithRolesDto
+            {
+                UserId = u.UserId,
+                Username = u.Username,
+                HashedPassword = u.HashedPassword,
+                Roles = u.UserRoles.Select(ur => ur.Role.Rolename).ToList()
+            })
+            .FirstOrDefaultAsync();
+        return userWithRoles;
     }
 }

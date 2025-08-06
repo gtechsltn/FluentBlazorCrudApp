@@ -11,6 +11,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentBlazorApp.Infrastruct
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentBlazorApp.Domain", "src\FluentBlazorApp.Domain\FluentBlazorApp.Domain.csproj", "{158EEBF7-71BA-3A91-632C-A2D2DA02A1FD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+		docs\ReadMeForDeveloper.md = docs\ReadMeForDeveloper.md
+		SqlSchema.sql = SqlSchema.sql
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{A817A022-9C6C-4D4B-A693-7C0799561838}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentBlazorApp.Tests", "tests\FluentBlazorApp.Tests\FluentBlazorApp.Tests.csproj", "{B969D9D4-B01D-4787-9C0B-017D60CB8272}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,9 +46,20 @@ Global
 		{158EEBF7-71BA-3A91-632C-A2D2DA02A1FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{158EEBF7-71BA-3A91-632C-A2D2DA02A1FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{158EEBF7-71BA-3A91-632C-A2D2DA02A1FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B969D9D4-B01D-4787-9C0B-017D60CB8272}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B969D9D4-B01D-4787-9C0B-017D60CB8272}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B969D9D4-B01D-4787-9C0B-017D60CB8272}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B969D9D4-B01D-4787-9C0B-017D60CB8272}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A4A74F93-799B-E163-DFA3-55B52BD68862} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{9371D2E3-28B9-4E53-9761-A172E6B17088} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{415D12CB-2983-428A-9B6A-5E652FE7AB24} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{158EEBF7-71BA-3A91-632C-A2D2DA02A1FD} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{B969D9D4-B01D-4787-9C0B-017D60CB8272} = {A817A022-9C6C-4D4B-A693-7C0799561838}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F2049B11-5548-42E7-9566-1A6F095A2E65}

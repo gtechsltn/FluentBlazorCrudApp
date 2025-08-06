@@ -3,10 +3,14 @@
 @using FluentBlazorApp.Application.Services
 @using FluentBlazorApp.Domain
 @using FluentBlazorApp.Infrastructure.Security
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using System.Security.Claims
 
 @inject IUserService UserService
 @inject CustomAuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@inject IHttpContextAccessor HttpContextAccessor
 
 <h1>Login</h1>
 
@@ -38,17 +42,46 @@
 
     private async Task HandleLogin()
     {
-        loginModel.Username = "Admin";
-        loginModel.Password = "Abc@123$";
-
         var user = await UserService.LoginAsync(loginModel.Username, loginModel.Password);
 
         if (user != null)
         {
-            if (user.Username == "Admin")
+            // The logic to sign in the user, which sets the authentication cookie.
+            // This is what's causing the error because the headers have already been sent.
+            // await HttpContextAccessor.HttpContext.SignInAsync(
+            //     CookieAuthenticationDefaults.AuthenticationScheme,
+            //     claimsPrincipal,
+            //     authProperties
+            // );
+
+            // CORRECT: Force a full-page reload to a different page.
+            // The new request will have the authentication cookie.
+            var returnUrl = HttpContextAccessor?.HttpContext?.Request?.Query["returnUrl"] ?? string.Empty;
+            var defaultUrl = "/counter";
+            var uri = string.IsNullOrEmpty(returnUrl) ? defaultUrl : returnUrl.ToString();
+
+            if (user.Roles.Contains("Admin"))
             {
-                await AuthenticationStateProvider.MarkUserAsAuthenticated(user.Username, "Admin");
-                NavigationManager.NavigateTo("/", true);
+                //await AuthenticationStateProvider.MarkUserAsAuthenticated(user.Username, "Admin");
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.Username),
+                    new Claim(ClaimTypes.Role, "Admin")
+                };
+                var identity = new ClaimsIdentity(claims, "Custom");
+                var principal = new ClaimsPrincipal(identity);
+
+                var httpContext = HttpContextAccessor?.HttpContext;
+                if (httpContext != null)
+                {
+                    await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+                }                
+                var adminUrl = "/fetchdata";                
+                NavigationManager.NavigateTo(adminUrl, forceLoad: true);
+            }
+            else
+            {
+                NavigationManager.NavigateTo(uri, forceLoad: true);
             }
         }
         else

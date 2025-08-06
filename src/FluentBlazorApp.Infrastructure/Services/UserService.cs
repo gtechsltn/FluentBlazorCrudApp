@@ -1,4 +1,5 @@
 using FluentBlazorApp.Application.Interfaces;
+using FluentBlazorApp.Domain.Dtos;
 using FluentBlazorApp.Domain.Entities;
 using FluentBlazorApp.Infrastructure.Security;
 
@@ -25,13 +26,15 @@ public class UserService : IUserService
         return newUser;
     }
 
-    public async Task<User?> LoginAsync(string username, string password)
+    public async Task<UserWithRolesDto?> LoginAsync(string username, string password)
     {
-        var user = await _userRepository.GetUserByUsernameAsync(username);
-        if (user == null || !PasswordHasher.VerifyPassword(password, user.HashedPassword))
+        var usernameToLower = username.ToLower();
+        var userWithRolesDto = await _userRepository.GetUserByUsernameAsync(usernameToLower);
+        var hashedPassword = userWithRolesDto?.HashedPassword ?? string.Empty;
+        if (userWithRolesDto == null || !PasswordHasher.VerifyPassword(password, hashedPassword))
         {
             return null;
         }
-        return user;
+        return userWithRolesDto;
     }
 }
